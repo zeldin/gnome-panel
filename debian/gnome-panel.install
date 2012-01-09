@@ -1,0 +1,5 @@
+usr/bin
+usr/lib/gnome-panel/*/*.so
+usr/lib/gnome-panel/gnome-*
+usr/share/man
+usr/share/applications

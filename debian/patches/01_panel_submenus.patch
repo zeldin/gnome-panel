@@ -1,0 +1,13 @@
+Index: gnome-panel-2.91.93/gnome-panel/panel-menu-button.c
+===================================================================
+--- gnome-panel-2.91.93.orig/gnome-panel/panel-menu-button.c	2011-03-29 09:30:56.000000000 +0530
++++ gnome-panel-2.91.93/gnome-panel/panel-menu-button.c	2011-03-31 00:00:34.676687022 +0530
+@@ -74,7 +74,7 @@
+ } MenuPathRootItem;
+ 
+ static MenuPathRootItem root_items [] = {
+-	{ APPLICATIONS_MENU, "applications", "applications.menu" },
++	{ APPLICATIONS_MENU, "applications", "gnome-applications.menu" },
+ 	{ GNOMECC_MENU,      "gnomecc",      "gnomecc.menu"      }
+ };
+ 

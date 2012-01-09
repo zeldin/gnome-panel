@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="Panel Applet Library Reference Manual" link="index.html" author="" name="panel-applet">
+  <chapters>
+    <sub name="Panel Applet Library Overview" link="overview.html"/>
+    <sub name="Getting Started with the Panel Applet library" link="getting-started.html">
+      <sub name="Introduction" link="getting-started.intro.html"/>
+      <sub name="Concepts" link="getting-started.concepts.html"/>
+      <sub name="Hello World Example" link="getting-started.example.html"/>
+      <sub name="Using a Context Menu" link="getting-started.context-menu.html"/>
+      <sub name="Settings" link="getting-started.settings.html"/>
+      <sub name="Making the Applet Visible to the Panel" link="getting-started.install.html"/>
+      <sub name="Proper Integration with the Panel" link="getting-started.integration.html"/>
+      <sub name="Out-of-Process vs In-Process" link="getting-started.in-out-process.html"/>
+      <sub name="Writing an applet in languages other than C" link="getting-started.introspection.html"/>
+    </sub>
+    <sub name="Porting Applets from GNOME 2.x" link="port-gnome2.html"/>
+    <sub name="API Reference" link="reference.html">
+      <sub name="Panel Applet" link="panel-applet-Panel-Applet.html"/>
+      <sub name="Panel Applet Factory" link="panel-applet-Panel-Applet-Factory.html"/>
+      <sub name="GConf Utilities" link="panel-applet-GConf-Utilities.html"/>
+    </sub>
+  </chapters>
+  <functions>
+    <function name="struct PanelApplet" link="panel-applet-Panel-Applet.html#PanelApplet-struct"/>
+    <function name="enum PanelAppletOrient" link="panel-applet-Panel-Applet.html#PanelAppletOrient"/>
+    <function name="enum PanelAppletFlags" link="panel-applet-Panel-Applet.html#PanelAppletFlags"/>
+    <function name="panel_applet_get_orient ()" link="panel-applet-Panel-Applet.html#panel-applet-get-orient"/>
+    <function name="panel_applet_get_size ()" link="panel-applet-Panel-Applet.html#panel-applet-get-size"/>
+    <function name="panel_applet_set_size_hints ()" link="panel-applet-Panel-Applet.html#panel-applet-set-size-hints"/>
+    <function name="panel_applet_get_background ()" link="panel-applet-Panel-Applet.html#panel-applet-get-background"/>
+    <function name="panel_applet_set_background_widget ()" link="panel-applet-Panel-Applet.html#panel-applet-set-background-widget"/>
+    <function name="panel_applet_get_flags ()" link="panel-applet-Panel-Applet.html#panel-applet-get-flags"/>
+    <function name="panel_applet_set_flags ()" link="panel-applet-Panel-Applet.html#panel-applet-set-flags"/>
+    <function name="panel_applet_get_locked_down ()" link="panel-applet-Panel-Applet.html#panel-applet-get-locked-down"/>
+    <function name="panel_applet_settings_new ()" link="panel-applet-Panel-Applet.html#panel-applet-settings-new"/>
+    <function name="panel_applet_add_preferences ()" link="panel-applet-Panel-Applet.html#panel-applet-add-preferences"/>
+    <function name="panel_applet_get_preferences_key ()" link="panel-applet-Panel-Applet.html#panel-applet-get-preferences-key"/>
+    <function name="panel_applet_request_focus ()" link="panel-applet-Panel-Applet.html#panel-applet-request-focus"/>
+    <function name="panel_applet_setup_menu ()" link="panel-applet-Panel-Applet.html#panel-applet-setup-menu"/>
+    <function name="panel_applet_setup_menu_from_file ()" link="panel-applet-Panel-Applet.html#panel-applet-setup-menu-from-file"/>
+    <function name="The &quot;background&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--background"/>
+    <function name="The &quot;closure&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--closure"/>
+    <function name="The &quot;connection&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--connection"/>
+    <function name="The &quot;flags&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--flags"/>
+    <function name="The &quot;id&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--id"/>
+    <function name="The &quot;locked-down&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--locked-down"/>
+    <function name="The &quot;orient&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--orient"/>
+    <function name="The &quot;prefs-key&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--prefs-key"/>
+    <function name="The &quot;settings-path&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--settings-path"/>
+    <function name="The &quot;size&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--size"/>
+    <function name="The &quot;size-hints&quot; property" link="panel-applet-Panel-Applet.html#PanelApplet--size-hints"/>
+    <function name="The &quot;change-background&quot; signal" link="panel-applet-Panel-Applet.html#PanelApplet-change-background"/>
+    <function name="The &quot;change-orient&quot; signal" link="panel-applet-Panel-Applet.html#PanelApplet-change-orient"/>
+    <function name="The &quot;change-size&quot; signal" link="panel-applet-Panel-Applet.html#PanelApplet-change-size"/>
+    <function name="The &quot;move-focus-out-of-applet&quot; signal" link="panel-applet-Panel-Applet.html#PanelApplet-move-focus-out-of-applet"/>
+    <function name="PanelAppletFactoryCallback ()" link="panel-applet-Panel-Applet-Factory.html#PanelAppletFactoryCallback"/>
+    <function name="PANEL_APPLET_OUT_PROCESS_FACTORY()" link="panel-applet-Panel-Applet-Factory.html#PANEL-APPLET-OUT-PROCESS-FACTORY:CAPS"/>
+    <function name="PANEL_APPLET_IN_PROCESS_FACTORY()" link="panel-applet-Panel-Applet-Factory.html#PANEL-APPLET-IN-PROCESS-FACTORY:CAPS"/>
+    <function name="panel_applet_factory_main ()" link="panel-applet-Panel-Applet-Factory.html#panel-applet-factory-main"/>
+    <function name="panel_applet_gconf_get_full_key ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-get-full-key"/>
+    <function name="panel_applet_gconf_get_bool ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-get-bool"/>
+    <function name="panel_applet_gconf_get_int ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-get-int"/>
+    <function name="panel_applet_gconf_get_string ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-get-string"/>
+    <function name="panel_applet_gconf_get_float ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-get-float"/>
+    <function name="panel_applet_gconf_get_list ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-get-list"/>
+    <function name="panel_applet_gconf_get_value ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-get-value"/>
+    <function name="panel_applet_gconf_set_bool ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-set-bool"/>
+    <function name="panel_applet_gconf_set_int ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-set-int"/>
+    <function name="panel_applet_gconf_set_string ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-set-string"/>
+    <function name="panel_applet_gconf_set_float ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-set-float"/>
+    <function name="panel_applet_gconf_set_list ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-set-list"/>
+    <function name="panel_applet_gconf_set_value ()" link="panel-applet-GConf-Utilities.html#panel-applet-gconf-set-value"/>
+  </functions>
+</book>
