@@ -1185,6 +1185,19 @@ panel_util_get_user_name (void)
 {
 	char *name;
 
+	name = g_locale_to_utf8 (g_get_user_name (), -1 , NULL, NULL, NULL);
+
+	if (!name)
+		name = g_strdup (g_get_user_name ());
+
+	return name;
+}
+
+char *
+panel_util_get_real_name (void)
+{
+	char *name;
+
 	name = g_locale_to_utf8 (g_get_real_name (), -1, NULL, NULL, NULL);
 
 	if (PANEL_GLIB_STR_EMPTY (name) || g_strcmp0 (name, "Unknown") == 0) {
@@ -1194,6 +1207,16 @@ panel_util_get_user_name (void)
 
 	if (!name)
 		name = g_strdup (g_get_user_name ());
+
+	return name;
+}
+
+char *
+panel_util_get_user_id (void)
+{
+	char *name;
+
+	name = g_strdup_printf ("%d", (int)getuid());
 
 	return name;
 }

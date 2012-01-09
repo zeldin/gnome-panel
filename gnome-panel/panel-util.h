@@ -68,6 +68,8 @@ void panel_util_key_event_is_popup_panel (GdkEventKey *event,
 					  gboolean    *is_popup_modifier);
 
 char *panel_util_get_user_name (void);
+char *panel_util_get_real_name (void);
+char *panel_util_get_user_id (void);
 
 G_END_DECLS
 
