@@ -1,0 +1,439 @@
+diff --git a/data/Makefile.am b/data/Makefile.am
+index c724043..d08531d 100644
+--- a/data/Makefile.am
++++ b/data/Makefile.am
+@@ -10,7 +10,8 @@ gsettings_panel_schemas_in_in =					\
+ 	org.gnome.gnome-panel.launcher.gschema.xml.in.in	\
+ 	org.gnome.gnome-panel.menu-button.gschema.xml.in.in	\
+ 	org.gnome.gnome-panel.object.gschema.xml.in.in		\
+-	org.gnome.gnome-panel.toplevel.gschema.xml.in.in
++	org.gnome.gnome-panel.toplevel.gschema.xml.in.in	\
++	org.gnome.gnome-panel.user-menu.gschema.xml.in.in
+ 
+ gsettings_schemas_in_in =			\
+ 	$(gsettings_panel_schemas_in_in)	\
+diff --git a/data/Makefile.in b/data/Makefile.in
+index 8e4fa83..4e4d438 100644
+--- a/data/Makefile.in
++++ b/data/Makefile.in
+@@ -344,7 +344,8 @@ gsettings_panel_schemas_in_in = \
+ 	org.gnome.gnome-panel.launcher.gschema.xml.in.in	\
+ 	org.gnome.gnome-panel.menu-button.gschema.xml.in.in	\
+ 	org.gnome.gnome-panel.object.gschema.xml.in.in		\
+-	org.gnome.gnome-panel.toplevel.gschema.xml.in.in
++	org.gnome.gnome-panel.toplevel.gschema.xml.in.in	\
++	org.gnome.gnome-panel.user-menu.gschema.xml.in.in
+ 
+ gsettings_schemas_in_in = \
+ 	$(gsettings_panel_schemas_in_in)	\
+diff --git a/data/org.gnome.gnome-panel.user-menu.gschema.xml.in.in b/data/org.gnome.gnome-panel.user-menu.gschema.xml.in.in
+new file mode 100644
+index 0000000..1850363
+--- /dev/null
++++ b/data/org.gnome.gnome-panel.user-menu.gschema.xml.in.in
+@@ -0,0 +1,9 @@
++<schemalist gettext-domain="@GETTEXT_PACKAGE@">
++  <schema id="org.gnome.gnome-panel.user-menu">
++    <key name="title" enum="org.gnome.gnome-panel.PanelUserMenuTitle">
++      <default>'real-name'</default>
++      <_summary>Menu title</_summary>
++      <_description>The title to use for the dektop menu.  Valid values are "real-name" for the user real name, "user-name" for the user login nam, "user-id" for the UNIX user id, or "none" for an empty title.</_description>
++    </key>
++  </schema>
++</schemalist>
+diff --git a/gnome-panel/menu.c b/gnome-panel/menu.c
+index 9bd069a..7a9e0d2 100644
+--- a/gnome-panel/menu.c
++++ b/gnome-panel/menu.c
+@@ -1388,7 +1388,8 @@ main_menu_append (GtkWidget *main_menu,
+ 	gtk_menu_shell_append (GTK_MENU_SHELL (main_menu), item);
+ 	gtk_widget_show (item);
+ 
+-	item = panel_desktop_menu_item_new (TRUE, FALSE, FALSE);
++	item = panel_desktop_menu_item_new (TRUE, FALSE, FALSE,
++					    PANEL_USER_MENU_TITLE_REAL_NAME);
+ 	panel_desktop_menu_item_set_panel (item, panel);
+ 	gtk_menu_shell_append (GTK_MENU_SHELL (main_menu), item);
+ 	gtk_widget_show (item);
+diff --git a/gnome-panel/panel-enums-gsettings.h b/gnome-panel/panel-enums-gsettings.h
+index 27a814e..a91d017 100644
+--- a/gnome-panel/panel-enums-gsettings.h
++++ b/gnome-panel/panel-enums-gsettings.h
+@@ -60,6 +60,13 @@ typedef enum {
+ 	PANEL_BACKGROUND_IMAGE_STYLE_FIT     = 2
+ } PanelBackgroundImageStyle;
+ 
++typedef enum {
++	PANEL_USER_MENU_TITLE_NONE = 0,
++	PANEL_USER_MENU_TITLE_REAL_NAME = 1,
++	PANEL_USER_MENU_TITLE_USER_NAME = 2,
++	PANEL_USER_MENU_TITLE_USER_ID = 3
++} PanelUserMenuTitle;
++
+ G_END_DECLS
+ 
+ #endif /* __PANEL_ENUMS_GSETTINGS_H__ */
+diff --git a/gnome-panel/panel-menu-items.c b/gnome-panel/panel-menu-items.c
+index dab8712..f990181 100644
+--- a/gnome-panel/panel-menu-items.c
++++ b/gnome-panel/panel-menu-items.c
+@@ -1708,10 +1708,35 @@ panel_desktop_menu_item_on_presence_changed (PanelSessionManager             *ma
+ }
+ #endif
+ 
++static char *panel_desktop_menu_item_create_title (PanelUserMenuTitle title)
++{
++	char                 *name;
++
++	switch (title) {
++	case PANEL_USER_MENU_TITLE_NONE:
++		name = g_strdup ("");
++		break;
++	case PANEL_USER_MENU_TITLE_REAL_NAME:
++		name = panel_util_get_real_name ();
++		break;
++	case PANEL_USER_MENU_TITLE_USER_NAME:
++		name = panel_util_get_user_name ();
++		break;
++	case PANEL_USER_MENU_TITLE_USER_ID:
++		name = panel_util_get_user_id ();
++		break;
++	default:
++		g_assert_not_reached ();
++	}
++
++	return name;
++}
++
+ GtkWidget *
+ panel_desktop_menu_item_new (gboolean use_image,
+ 			     gboolean in_menubar,
+-			     gboolean append_lock_logout)
++			     gboolean append_lock_logout,
++			     PanelUserMenuTitle title)
+ {
+ 	PanelDesktopMenuItem *menuitem;
+ 	char                 *name;
+@@ -1722,7 +1747,7 @@ panel_desktop_menu_item_new (gboolean use_image,
+ 
+ 	menuitem = g_object_new (PANEL_TYPE_DESKTOP_MENU_ITEM, NULL);
+ 
+-	name = panel_util_get_user_name ();
++	name = panel_desktop_menu_item_create_title (title);
+ #ifdef HAVE_TELEPATHY_GLIB
+ 	icon_name = PANEL_ICON_USER_AVAILABLE;
+ #else
+@@ -1812,6 +1837,15 @@ panel_desktop_menu_item_set_panel (GtkWidget   *item,
+ 				       "menu_panel", panel);
+ }
+ 
++void
++panel_desktop_menu_item_set_title (GtkWidget   *item,
++				   PanelUserMenuTitle title)
++{
++	char *name = panel_desktop_menu_item_create_title (title);
++	gtk_menu_item_set_label (GTK_MENU_ITEM (item), name);
++	g_free (name);
++}
++
+ static void
+ panel_menu_items_lock_logout_separator_notified (PanelLockdown *lockdown,
+ 						 gpointer       user_data)
+diff --git a/gnome-panel/panel-menu-items.h b/gnome-panel/panel-menu-items.h
+index 1548b93..38294f3 100644
+--- a/gnome-panel/panel-menu-items.h
++++ b/gnome-panel/panel-menu-items.h
+@@ -82,12 +82,15 @@ GtkWidget *panel_place_menu_item_new   (gboolean use_image,
+ 					gboolean in_menubar);
+ GtkWidget *panel_desktop_menu_item_new (gboolean use_image,
+ 				        gboolean in_menubar,
+-					gboolean append_lock_logout);
++					gboolean append_lock_logout,
++					PanelUserMenuTitle title);
+ 
+ void panel_place_menu_item_set_panel   (GtkWidget   *item,
+ 					PanelWidget *panel);
+ void panel_desktop_menu_item_set_panel (GtkWidget   *item,
+ 					PanelWidget *panel);
++void panel_desktop_menu_item_set_title (GtkWidget   *item,
++					PanelUserMenuTitle title);
+ 
+ void panel_menu_items_append_lock_logout (GtkWidget *menu);
+ void panel_menu_item_activate_desktop_file (GtkWidget  *menuitem,
+diff --git a/gnome-panel/panel-schemas.h b/gnome-panel/panel-schemas.h
+index 59b01b8..20967f9 100644
+--- a/gnome-panel/panel-schemas.h
++++ b/gnome-panel/panel-schemas.h
+@@ -75,4 +75,7 @@
+ #define PANEL_MENU_BUTTON_CUSTOM_ICON_KEY "custom-icon"
+ #define PANEL_MENU_BUTTON_MENU_PATH_KEY   "menu-path"
+ 
++#define PANEL_USER_MENU_SCHEMA         "org.gnome.gnome-panel.user-menu"
++#define PANEL_USER_MENU_TITLE_KEY      "title"
++
+ #endif /* __PANEL_SCHEMAS_H__ */
+diff --git a/gnome-panel/panel-user-menu.c b/gnome-panel/panel-user-menu.c
+index fa68dba..61244be 100644
+--- a/gnome-panel/panel-user-menu.c
++++ b/gnome-panel/panel-user-menu.c
+@@ -30,6 +30,8 @@
+ #include "panel-layout.h"
+ #include "panel-menu-bar-object.h"
+ #include "panel-menu-items.h"
++#include "panel-typebuiltins.h"
++#include "panel-schemas.h"
+ 
+ #include "panel-user-menu.h"
+ 
+@@ -37,11 +39,19 @@ G_DEFINE_TYPE (PanelUserMenu, panel_user_menu, PANEL_TYPE_MENU_BAR_OBJECT)
+ 
+ #define PANEL_USER_MENU_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), PANEL_TYPE_USER_MENU, PanelUserMenuPrivate))
+ 
++enum {
++	PROP_0,
++	PROP_TITLE
++};
++
+ struct _PanelUserMenuPrivate {
+ 	AppletInfo  *info;
+ 	PanelWidget *panel;
++	GSettings   *settings_instance;
+ 
+ 	GtkWidget   *desktop_item;
++
++	PanelUserMenuTitle title;
+ };
+ 
+ static void
+@@ -50,11 +60,59 @@ panel_user_menu_init (PanelUserMenu *usermenu)
+ 	usermenu->priv = PANEL_USER_MENU_GET_PRIVATE (usermenu);
+ 
+ 	usermenu->priv->info = NULL;
++	usermenu->priv->settings_instance = NULL;
+ 
+-	usermenu->priv->desktop_item = panel_desktop_menu_item_new (TRUE, TRUE, TRUE);
+-	gtk_menu_shell_append (GTK_MENU_SHELL (usermenu),
+-			       usermenu->priv->desktop_item);
+-	gtk_widget_show (usermenu->priv->desktop_item);
++	usermenu->priv->desktop_item = NULL;
++
++	usermenu->priv->title = PANEL_USER_MENU_TITLE_REAL_NAME;
++}
++
++static void
++panel_user_menu_finalize (GObject *object)
++{
++	PanelUserMenu *usermenu = PANEL_USER_MENU (object);
++
++	if (usermenu->priv->settings_instance)
++		g_object_unref (usermenu->priv->settings_instance);
++	usermenu->priv->settings_instance = NULL;
++
++	G_OBJECT_CLASS (panel_user_menu_parent_class)->finalize (object);
++}
++
++static void
++panel_user_menu_get_property (GObject    *object,
++			      guint       prop_id,
++			      GValue     *value,
++			      GParamSpec *pspec)
++{
++	PanelUserMenu *usermenu = PANEL_USER_MENU (object);
++
++	switch (prop_id) {
++	case PROP_TITLE:
++		g_value_set_enum (value, usermenu->priv->title);
++		break;
++	default:
++		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++		break;
++	}
++}
++
++static void
++panel_user_menu_set_property (GObject      *object,
++			      guint         prop_id,
++			      const GValue *value,
++			      GParamSpec   *pspec)
++{
++	PanelUserMenu *usermenu = PANEL_USER_MENU (object);
++
++	switch (prop_id) {
++	case PROP_TITLE:
++                panel_user_menu_set_title (usermenu, g_value_get_enum (value));
++                break;
++	default:
++		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++		break;
++	}
+ }
+ 
+ static void
+@@ -77,11 +135,54 @@ panel_user_menu_parent_set (GtkWidget *widget,
+ static void
+ panel_user_menu_class_init (PanelUserMenuClass *klass)
+ {
++	GObjectClass   *gobject_class = (GObjectClass   *) klass;
+ 	GtkWidgetClass *widget_class  = (GtkWidgetClass *) klass;
+ 
++	gobject_class->finalize     = panel_user_menu_finalize;
++	gobject_class->get_property = panel_user_menu_get_property;
++	gobject_class->set_property = panel_user_menu_set_property;
++
+ 	widget_class->parent_set = panel_user_menu_parent_set;
+ 
+ 	g_type_class_add_private (klass, sizeof (PanelUserMenuPrivate));
++
++	g_object_class_install_property (
++			gobject_class,
++			PROP_TITLE,
++			g_param_spec_enum ("title",
++					   "Title",
++					   "Title for the menu",
++					   PANEL_TYPE_USER_MENU_TITLE,
++					   PANEL_USER_MENU_TITLE_REAL_NAME,
++					   G_PARAM_READWRITE));
++}
++
++static void
++panel_user_menu_settings_changed (GSettings       *settings,
++				  char            *key,
++				  PanelUserMenu   *usermenu)
++{
++	if (g_strcmp0 (key, PANEL_USER_MENU_TITLE_KEY) == 0) {
++		PanelUserMenuTitle value;
++		value = g_settings_get_enum (settings, key);
++		panel_user_menu_set_title (usermenu, value);
++	}
++}
++
++void
++panel_user_menu_set_title (PanelUserMenu      *usermenu,
++			   PanelUserMenuTitle  title)
++{
++	g_return_if_fail (PANEL_IS_USER_MENU (usermenu));
++
++	if (usermenu->priv->title == title)
++		return;
++
++	usermenu->priv->title = title;
++
++	if (usermenu->priv->desktop_item != NULL)
++		panel_desktop_menu_item_set_title(usermenu->priv->desktop_item,
++						  title);
+ }
+ 
+ void
+@@ -89,11 +190,25 @@ panel_user_menu_load (PanelWidget *panel,
+ 		     const char  *id,
+ 		     GSettings   *settings)
+ {
+-	PanelUserMenu *usermenu;
++	PanelUserMenu      *usermenu;
++	GSettings          *settings_instance;
++	PanelUserMenuTitle  title;
+ 
+ 	g_return_if_fail (panel != NULL);
+ 
+-	usermenu = g_object_new (PANEL_TYPE_USER_MENU, NULL);
++	settings_instance = panel_layout_get_instance_settings (settings,
++								PANEL_USER_MENU_SCHEMA);
++
++	title = g_settings_get_enum (settings_instance,
++				     PANEL_USER_MENU_TITLE_KEY);
++
++	usermenu = g_object_new (PANEL_TYPE_USER_MENU,
++				 "title", title, NULL);
++
++	usermenu->priv->desktop_item = panel_desktop_menu_item_new (TRUE, TRUE, TRUE, usermenu->priv->title);
++	gtk_menu_shell_append (GTK_MENU_SHELL (usermenu),
++			       usermenu->priv->desktop_item);
++	gtk_widget_show (usermenu->priv->desktop_item);
+ 
+ 	usermenu->priv->info = panel_applet_register (
+ 					GTK_WIDGET (usermenu), panel,
+@@ -102,11 +217,19 @@ panel_user_menu_load (PanelWidget *panel,
+ 					NULL, NULL);
+ 	if (!usermenu->priv->info) {
+ 		gtk_widget_destroy (GTK_WIDGET (usermenu));
++		g_object_unref (settings_instance);
++
+ 		return;
+ 	}
+ 
+ 	panel_menu_bar_object_object_load_finish (PANEL_MENU_BAR_OBJECT (usermenu),
+ 						  panel);
++
++	usermenu->priv->settings_instance = settings_instance;
++
++	g_signal_connect (usermenu->priv->settings_instance, "changed",
++			  G_CALLBACK (panel_user_menu_settings_changed),
++			  usermenu);
+ }
+ 
+ void
+diff --git a/gnome-panel/panel-user-menu.h b/gnome-panel/panel-user-menu.h
+index f275592..2f914e3 100644
+--- a/gnome-panel/panel-user-menu.h
++++ b/gnome-panel/panel-user-menu.h
+@@ -59,6 +59,9 @@ void       panel_user_menu_create           (PanelToplevel       *toplevel,
+ 					     PanelObjectPackType  pack_type,
+ 					     int                  pack_index);
+ 
++void       panel_user_menu_set_title        (PanelUserMenu      *usermenu,
++					     PanelUserMenuTitle  title);
++
+ void       panel_user_menu_load             (PanelWidget  *panel,
+ 					     const char   *id,
+ 					     GSettings    *settings);
+diff --git a/gnome-panel/panel-util.c b/gnome-panel/panel-util.c
+index d8b08ad..3e18508 100644
+--- a/gnome-panel/panel-util.c
++++ b/gnome-panel/panel-util.c
+@@ -1185,6 +1185,19 @@ panel_util_get_user_name (void)
+ {
+ 	char *name;
+ 
++	name = g_locale_to_utf8 (g_get_user_name (), -1 , NULL, NULL, NULL);
++
++	if (!name)
++		name = g_strdup (g_get_user_name ());
++
++	return name;
++}
++
++char *
++panel_util_get_real_name (void)
++{
++	char *name;
++
+ 	name = g_locale_to_utf8 (g_get_real_name (), -1, NULL, NULL, NULL);
+ 
+ 	if (PANEL_GLIB_STR_EMPTY (name) || g_strcmp0 (name, "Unknown") == 0) {
+@@ -1197,3 +1210,13 @@ panel_util_get_user_name (void)
+ 
+ 	return name;
+ }
++
++char *
++panel_util_get_user_id (void)
++{
++	char *name;
++
++	name = g_strdup_printf ("%d", (int)getuid());
++
++	return name;
++}
+diff --git a/gnome-panel/panel-util.h b/gnome-panel/panel-util.h
+index fc8e9de..0a35818 100644
+--- a/gnome-panel/panel-util.h
++++ b/gnome-panel/panel-util.h
+@@ -68,6 +68,8 @@ void panel_util_key_event_is_popup_panel (GdkEventKey *event,
+ 					  gboolean    *is_popup_modifier);
+ 
+ char *panel_util_get_user_name (void);
++char *panel_util_get_real_name (void);
++char *panel_util_get_user_id (void);
+ 
+ G_END_DECLS
+ 
