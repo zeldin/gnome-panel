@@ -1,0 +1,9 @@
+<schemalist gettext-domain="@GETTEXT_PACKAGE@">
+  <schema id="org.gnome.gnome-panel.user-menu">
+    <key name="title" enum="org.gnome.gnome-panel.PanelUserMenuTitle">
+      <default>'real-name'</default>
+      <_summary>Menu title</_summary>
+      <_description>The title to use for the dektop menu.  Valid values are "real-name" for the user real name, "user-name" for the user login nam, "user-id" for the UNIX user id, or "none" for an empty title.</_description>
+    </key>
+  </schema>
+</schemalist>

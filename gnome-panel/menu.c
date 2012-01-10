@@ -1388,7 +1388,8 @@ main_menu_append (GtkWidget *main_menu,
 	gtk_menu_shell_append (GTK_MENU_SHELL (main_menu), item);
 	gtk_widget_show (item);
 
-	item = panel_desktop_menu_item_new (TRUE, FALSE, FALSE);
+	item = panel_desktop_menu_item_new (TRUE, FALSE, FALSE,
+					    PANEL_USER_MENU_TITLE_REAL_NAME);
 	panel_desktop_menu_item_set_panel (item, panel);
 	gtk_menu_shell_append (GTK_MENU_SHELL (main_menu), item);
 	gtk_widget_show (item);

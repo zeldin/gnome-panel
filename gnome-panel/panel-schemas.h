@@ -75,4 +75,7 @@
 #define PANEL_MENU_BUTTON_CUSTOM_ICON_KEY "custom-icon"
 #define PANEL_MENU_BUTTON_MENU_PATH_KEY   "menu-path"
 
+#define PANEL_USER_MENU_SCHEMA         "org.gnome.gnome-panel.user-menu"
+#define PANEL_USER_MENU_TITLE_KEY      "title"
+
 #endif /* __PANEL_SCHEMAS_H__ */

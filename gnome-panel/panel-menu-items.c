@@ -1708,10 +1708,35 @@ panel_desktop_menu_item_on_presence_changed (PanelSessionManager             *ma
 }
 #endif
 
+static char *panel_desktop_menu_item_create_title (PanelUserMenuTitle title)
+{
+	char                 *name;
+
+	switch (title) {
+	case PANEL_USER_MENU_TITLE_NONE:
+		name = g_strdup ("");
+		break;
+	case PANEL_USER_MENU_TITLE_REAL_NAME:
+		name = panel_util_get_real_name ();
+		break;
+	case PANEL_USER_MENU_TITLE_USER_NAME:
+		name = panel_util_get_user_name ();
+		break;
+	case PANEL_USER_MENU_TITLE_USER_ID:
+		name = panel_util_get_user_id ();
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
+	return name;
+}
+
 GtkWidget *
 panel_desktop_menu_item_new (gboolean use_image,
 			     gboolean in_menubar,
-			     gboolean append_lock_logout)
+			     gboolean append_lock_logout,
+			     PanelUserMenuTitle title)
 {
 	PanelDesktopMenuItem *menuitem;
 	char                 *name;
@@ -1722,7 +1747,7 @@ panel_desktop_menu_item_new (gboolean use_image,
 
 	menuitem = g_object_new (PANEL_TYPE_DESKTOP_MENU_ITEM, NULL);
 
-	name = panel_util_get_user_name ();
+	name = panel_desktop_menu_item_create_title (title);
 #ifdef HAVE_TELEPATHY_GLIB
 	icon_name = PANEL_ICON_USER_AVAILABLE;
 #else
@@ -1810,6 +1835,15 @@ panel_desktop_menu_item_set_panel (GtkWidget   *item,
 	desktop_item->priv->panel = panel;
 	panel_applet_menu_set_recurse (GTK_MENU (desktop_item->priv->menu),
 				       "menu_panel", panel);
+}
+
+void
+panel_desktop_menu_item_set_title (GtkWidget   *item,
+				   PanelUserMenuTitle title)
+{
+	char *name = panel_desktop_menu_item_create_title (title);
+	gtk_menu_item_set_label (GTK_MENU_ITEM (item), name);
+	g_free (name);
 }
 
 static void

@@ -82,12 +82,15 @@ GtkWidget *panel_place_menu_item_new   (gboolean use_image,
 					gboolean in_menubar);
 GtkWidget *panel_desktop_menu_item_new (gboolean use_image,
 				        gboolean in_menubar,
-					gboolean append_lock_logout);
+					gboolean append_lock_logout,
+					PanelUserMenuTitle title);
 
 void panel_place_menu_item_set_panel   (GtkWidget   *item,
 					PanelWidget *panel);
 void panel_desktop_menu_item_set_panel (GtkWidget   *item,
 					PanelWidget *panel);
+void panel_desktop_menu_item_set_title (GtkWidget   *item,
+					PanelUserMenuTitle title);
 
 void panel_menu_items_append_lock_logout (GtkWidget *menu);
 void panel_menu_item_activate_desktop_file (GtkWidget  *menuitem,

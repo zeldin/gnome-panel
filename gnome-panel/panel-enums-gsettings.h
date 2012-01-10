@@ -60,6 +60,13 @@ typedef enum {
 	PANEL_BACKGROUND_IMAGE_STYLE_FIT     = 2
 } PanelBackgroundImageStyle;
 
+typedef enum {
+	PANEL_USER_MENU_TITLE_NONE = 0,
+	PANEL_USER_MENU_TITLE_REAL_NAME = 1,
+	PANEL_USER_MENU_TITLE_USER_NAME = 2,
+	PANEL_USER_MENU_TITLE_USER_ID = 3
+} PanelUserMenuTitle;
+
 G_END_DECLS
 
 #endif /* __PANEL_ENUMS_GSETTINGS_H__ */

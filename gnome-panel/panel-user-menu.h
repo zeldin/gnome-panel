@@ -59,6 +59,9 @@ void       panel_user_menu_create           (PanelToplevel       *toplevel,
 					     PanelObjectPackType  pack_type,
 					     int                  pack_index);
 
+void       panel_user_menu_set_title        (PanelUserMenu      *usermenu,
+					     PanelUserMenuTitle  title);
+
 void       panel_user_menu_load             (PanelWidget  *panel,
 					     const char   *id,
 					     GSettings    *settings);

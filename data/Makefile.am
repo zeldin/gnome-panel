@@ -10,7 +10,8 @@ gsettings_panel_schemas_in_in =					\
 	org.gnome.gnome-panel.launcher.gschema.xml.in.in	\
 	org.gnome.gnome-panel.menu-button.gschema.xml.in.in	\
 	org.gnome.gnome-panel.object.gschema.xml.in.in		\
-	org.gnome.gnome-panel.toplevel.gschema.xml.in.in
+	org.gnome.gnome-panel.toplevel.gschema.xml.in.in	\
+	org.gnome.gnome-panel.user-menu.gschema.xml.in.in
 
 gsettings_schemas_in_in =			\
 	$(gsettings_panel_schemas_in_in)	\
